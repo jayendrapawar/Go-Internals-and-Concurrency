@@ -11,6 +11,8 @@ func main() {
 	PrintFooBarUnorderedLoop(k)
 	fmt.Println(" ")
 	PrintFooBarOrderedLoop(k)
+	fmt.Println(" ")
+	PrintFooBaroOrderedLoopUsingLoop(k)
 
 }
 
@@ -52,6 +54,56 @@ func PrintFooBarOrderedLoop(k int){
 
 	wg.Wait()
 
+}
+
+func PrintFooBaroOrderedLoopUsingLoop(k int){
+	mu := sync.Mutex{}
+	cond := sync.NewCond(&mu)
+
+	fooTurn := true
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	// Foo goroutine
+	go func() {
+		defer wg.Done()
+
+		for i := 0; i < k; i++ {
+			mu.Lock()
+
+			for !fooTurn {
+				cond.Wait()
+			}
+
+			fmt.Print("foo")
+			fooTurn = false
+
+			cond.Signal()
+			mu.Unlock()
+		}
+	}()
+
+	// Bar goroutine
+	go func() {
+		defer wg.Done()
+
+		for i := 0; i < k; i++ {
+			mu.Lock()
+
+			for fooTurn {
+				cond.Wait()
+			}
+
+			fmt.Print("Bar")
+			fooTurn = true
+
+			cond.Signal()
+			mu.Unlock()
+		}
+	}()
+
+	wg.Wait()
 }
 
 func PrintFooBarUnorderedLoop(k int){
