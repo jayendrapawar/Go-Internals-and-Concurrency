@@ -11,27 +11,21 @@ import (
 // in a separate goroutine using sync.WaitGroup for
 // synchronization, and returns the total sum of the slice.
 
-// Approaches
-// 1. Using only sync.WaitGroup (IMP)
-// 2. Using only Channels
-// 3. Using only Mutexes
-
 
 func main(){
-	n := []int{1,2,3,4}
+	n := []int{1,2,3,4,5,6}
 	chunks := 2
 
-	RunUsingWaitGroup(n, chunks)
-	RunUsingChannels(n, chunks)
-	RunUsingMutexes(n, chunks)
+	OrderedSumOfSlice(n, chunks)
+	UnOrderedSumOfSlice(n, chunks) // chunks == numWorkers
 }
 
-//--------------WAITGROUP-----------------------------------------------------------
+//---------------Ordered-----------------------------------------------------------
 type partitionIdx struct {
 	chunk []int
 }
 
-func RunUsingWaitGroup(n []int, numWorkers int) {
+func OrderedSumOfSlice(n []int, numWorkers int) {
 	if len(n) == 0 || numWorkers <= 0 {
 		return
 	}
@@ -84,12 +78,41 @@ func AddSum(pidx partitionIdx) int {
 	return sum
 }
 
-//---------------CHANNELS-----------------------------------------------------------
-func RunUsingChannels(n []int, chunks int){
+//---------------UnOrdered-----------------------------------------------------------
+func UnOrderedSumOfSlice(n []int, chunks int){
+	if len(n) == 0 || chunks <= 0 {
+		return
+	}
+	
+	cap := 0 
+	if len(n)%2 == 0{
+		cap = len(n)/2
+	} else {
+		cap = len(n)/2 + 1
+	}
 
-}
+	sum := make([]int,0,cap) 
+	var wg sync.WaitGroup
 
-//---------------MUTEXES-----------------------------------------------------------
-func RunUsingMutexes(n []int, chunks int){
+	for i:= 0; i<len(n); i += 2{
+		wg.Add(1)
+		go func(p int){
+			defer wg.Done()
+			if p+1 < len(n) {
+				ans := n[p] + n[p+1]
+				sum = append(sum, ans)
+			} else {
+			sum = append(sum, n[p])
+			}
+		}(i)
+	}
 
+	wg.Wait()
+
+	ans := 0
+	for _, n := range sum {
+		ans += n
+	}
+
+	fmt.Println(ans)
 }
