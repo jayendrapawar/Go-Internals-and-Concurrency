@@ -5,16 +5,6 @@ import (
 	"sync"
 )
 
-// Problem Statement
-// build a single output channel that multiplexes (combines) messages from
-// N different input channels concurrently without data loss, deadlocks,
-// or resource leaks
-
-// Input: N separate incoming channels producing values asynchronously
-// Output: A single merged output channel (chan T) that receives
-//         all values produced across the N inputs
-
-
 func Funnel(sources ...<-chan int) chan int {
 	dest := make(chan int)
 	wg := sync.WaitGroup{}
