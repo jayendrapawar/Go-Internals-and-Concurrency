@@ -4,6 +4,9 @@
 // strings (representing URLs) concurrently, limiting the maximum number of simultaneous 
 // in-flight tasks to maxConcurrency.
 
+// // 1. Bounded Parallelism WITH Bounded Blocking (Waits for a free slot)
+// // 2. Bounded Parallelism WITHOUT Blocking (Drops/rejects if full)
+
 
 package main
 
@@ -19,5 +22,5 @@ func main() {
 }
 
 func ProcessURLs(urls []string, maxConcurrency int) {
-	
+
 }
