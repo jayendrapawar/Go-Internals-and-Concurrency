@@ -9,6 +9,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+//  Unbounded Fail-Fast 
+
 func FetchURLs(urls []string) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

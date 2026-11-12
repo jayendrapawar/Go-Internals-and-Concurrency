@@ -11,7 +11,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// Follow Up Questions
+// Follow Up Questions - Bounded Fail Fast 
 // 1. With Timeout – Add 3-second timeout per HTTP request.
 // 2. With Retry – Retry failed requests up to 3 times.
 // 3. With Parent Cancellation – Cancel all requests when parent context is cancelled.
